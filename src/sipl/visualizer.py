@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 
 from lark import Lark, Token, Tree
 
-DEFAULT_GRAMMAR_PATH = Path(__file__).resolve().parent.parent.parent / "grammar" / "sipl.lark"
+DEFAULT_GRAMMAR_PATH = Path(__file__).resolve().parent / "grammar" / "sipl.lark"
 
 NON_TERMINAL_MAP = {
     "program": "P",

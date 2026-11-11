@@ -21,7 +21,7 @@ from .ast_nodes import (
     While,
 )
 
-DEFAULT_GRAMMAR_PATH = Path(__file__).resolve().parent.parent.parent / "grammar" / "sipl.lark"
+DEFAULT_GRAMMAR_PATH = Path(__file__).resolve().parent / "grammar" / "sipl.lark"
 
 
 class SIPLSyntaxError(Exception):

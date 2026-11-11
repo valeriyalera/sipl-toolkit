@@ -1,0 +1,70 @@
+// ========================================================
+// SIPL Formal Grammar (БНФ курсу "Теорія програмування")
+// Кафедра ТТП, ФКНК, КНУ імені Тараса Шевченка
+// ========================================================
+
+?start: program
+program: "begin" stmt "end"
+
+// Оператор (S): послідовність операторів через крапку з комою
+?stmt: seq_stmt
+
+seq_stmt: single_stmt (";" single_stmt)*
+
+?single_stmt: assign_stmt
+            | if_stmt
+            | while_stmt
+            | block_stmt
+            | skip_stmt
+
+assign_stmt: VAR ":=" a_expr
+if_stmt:     "if" b_expr "then" single_stmt "else" single_stmt
+while_stmt:  "while" b_expr "do" single_stmt
+block_stmt:  "begin" stmt "end"
+skip_stmt:   "skip"
+
+// Арифметичні вирази (Aexp / a)
+?a_expr: a_term
+       | a_expr "+" a_term   -> add
+       | a_expr "-" a_term   -> sub
+
+?a_term: a_factor
+       | a_term "*" a_factor   -> mul
+       | a_term "div" a_factor -> div
+       | a_term "mod" a_factor -> mod
+
+?a_factor: VAR                -> var
+         | NUMBER             -> num
+         | "(" a_expr ")"
+
+// Булеві вирази / Умови (Bexp / b)
+?b_expr: b_term
+       | b_expr "or" b_term   -> b_or
+       | b_expr "\\/" b_term  -> b_or
+
+?b_term: b_factor
+       | b_term "and" b_factor -> b_and
+       | b_term "/\\" b_factor -> b_and
+
+?b_factor: "not" b_factor      -> b_not
+         | "!" b_factor        -> b_not
+         | rel_expr
+         | "true"              -> b_true
+         | "false"             -> b_false
+         | "(" b_expr ")"
+
+// Відношення
+rel_expr: a_expr RELOP a_expr
+
+RELOP: "=" | "!=" | "<=" | ">=" | "<" | ">"
+
+// Токени
+VAR: /[a-zA-Z_][a-zA-Z0-9_]*/
+NUMBER: /[0-9]+/
+
+// Пропуск пробілів і коментарів
+%import common.WS
+%ignore WS
+
+COMMENT: "//" /[^\n]/* | "/*" /(.|\n)*?/ "*/"
+%ignore COMMENT
