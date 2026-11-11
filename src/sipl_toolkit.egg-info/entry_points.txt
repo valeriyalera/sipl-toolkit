@@ -1,0 +1,2 @@
+[console_scripts]
+sipl = sipl.cli:main

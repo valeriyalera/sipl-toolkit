@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: sipl-toolkit
+Version: 0.1.0
+Summary: Toolkit for Simple Imperative Programming Language (SIPL)
+Author: Valeriia Potekhina
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: lark>=1.1.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=5.0.0; extra == "dev"
+Requires-Dist: ruff>=0.3.0; extra == "dev"
+Requires-Dist: mypy>=1.9.0; extra == "dev"
+Requires-Dist: build>=1.1.0; extra == "dev"
+
+# SIPL Toolkit
+
+![CI](https://github.com/valeriyalera/sipl-toolkit/actions/workflows/ci.yml/badge.svg)
+
+Інструментарій для мови Simple Imperative Programming Language (SIPL): парсер, інтерпретатор, трасувальник, побудова дерева виводу (CST) та семантичних термів у нотації курсу «Теорія програмування».
