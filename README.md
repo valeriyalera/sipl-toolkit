@@ -31,6 +31,9 @@ sipl-toolkit/
 │   ├── cli.md                 # Документація команд CLI
 │   └── lexics.md              # Опис лексики та синтаксису SIPL
 ├── examples/
+│   ├── factorial.sipl         # Обчислення факторіала N!
+│   ├── gcd.sipl               # Алгоритм Евкліда (вкладені while та if-else)
+│   └── logic_branch.sipl      # Логічні вирази (not, and, or), div та skip
 │   └── power.sipl             # Приклади програм мовою SIPL
 ├── grammar/
 │   └── sipl.lark              # CORE-01: Формальна граматика SIPL

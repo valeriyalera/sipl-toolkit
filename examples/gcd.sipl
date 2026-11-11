@@ -1,0 +1,9 @@
+begin
+    while A != B do
+    begin
+        if A > B then
+            A := A - B
+        else
+            B := B - A
+    end
+end
