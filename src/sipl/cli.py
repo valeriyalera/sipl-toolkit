@@ -196,7 +196,7 @@ def cmd_visualize(args) -> int:
 
     code = path.read_text(encoding="utf-8")
     try:
-        visualizer = ParseTreeVisualizer(code)
+        visualizer = ParseTreeVisualizer(code, lang=args.lang)
     except Exception as e:
         if args.format == "json":
             print(json.dumps({"status": "error", "error_type": "ParseTreeError", "message": str(e)}))
@@ -303,6 +303,7 @@ def main(argv=None) -> int:
         default="text",
         help="Visualization format (default: text)"
     )
+    p_vis.add_argument("--lang", choices=["uk", "en"], default="uk", help="Non-terminal label language (default: uk)")
     p_vis.add_argument("--spans", action="store_true", help="Include coordinates in text mode")
     p_vis.add_argument("-o", "--output", help="Save output to file")
     p_vis.set_defaults(func=cmd_visualize)

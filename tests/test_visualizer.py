@@ -1,6 +1,7 @@
 import json
 import re
 import shutil
+from pathlib import Path
 
 import pytest
 
@@ -9,37 +10,75 @@ from sipl.visualizer import ParseTreeVisualizer, dot_escape
 
 
 def test_dot_escape_does_not_use_html_entities():
-    """Екранування для DOT не повинно перетворювати > на &gt;"""
-    raw = 'while Y > 0 and X <= 5 do "test"'
+    """Екранування для DOT не повинно перетворювати > на &gt; та не містити переносів рядків."""
+    raw = 'while Y > 0 and X <= 5 do\n"test"'
     escaped = dot_escape(raw)
     assert "&gt;" not in escaped
     assert "&lt;" not in escaped
+    assert "\n" not in escaped
     assert ">" in escaped
     assert "<=" in escaped
     assert '\\"test\\"' in escaped
 
 
-def test_parse_tree_derivation_chain():
-    """Перевірка ланцюжка виведення нетерміналів Aexp -> Aterm -> Afactor."""
+def test_parse_tree_canonical_categories_and_collapsed_chains():
+    """Перевірка канонічних категорій курсу без внутрішніх вузлів LALR (Aterm, Afactor, S_assign)."""
     code = "begin X := 1 + 2 * 3 end"
-    vis = ParseTreeVisualizer(code)
-    text = vis.to_text()
+    vis_uk = ParseTreeVisualizer(code, lang="uk")
+    text_uk = vis_uk.to_text()
 
-    assert "Aexp" in text
-    assert "Aterm" in text
-    assert "Afactor" in text
-    assert "Token('1')" in text
-    assert "Token('+')" in text
+    assert "<програма>" in text_uk
+    assert "<оператор>" in text_uk
+    assert "<вираз>" in text_uk
+    assert "<змінна>" in text_uk
+    assert "<число>" in text_uk
+    for internal_name in ("Aterm", "Afactor", "S_assign", "Bterm", "Bfactor", "RelExpr"):
+        assert internal_name not in text_uk
+
+    vis_en = ParseTreeVisualizer(code, lang="en")
+    text_en = vis_en.to_text()
+    assert "P " in text_en
+    assert "Aexp" in text_en
+    assert "Var" in text_en
+    assert "Num" in text_en
+
+
+def test_power_sipl_leaves_count_and_yield():
+    """Для power.sipl кількість листків дорівнює 24, а обхід зліва направо відновлює програму."""
+    power_code = Path("examples/power.sipl").read_text(encoding="utf-8")
+    vis = ParseTreeVisualizer(power_code, lang="uk")
+    leaves = vis.get_leaves()
+
+    assert len(leaves) == 24
+    assert [lf.leaf_index for lf in leaves] == list(range(1, 25))
+
+    reconstructed = " ".join(lf.source for lf in leaves)
+    assert reconstructed == "begin R := 1 ; while Y > 0 do begin R := R * X ; Y := Y - 1 end end"
+    assert "".join(lf.source for lf in leaves) == re.sub(r"\s+", "", power_code)
+
+
+def test_binary_semicolon_nesting():
+    """Послідовність із 3+ операторів будується як бінарне лівоасоціативне дерево S -> S ; S."""
+    code = "begin A := 1 ; B := 2 ; C := 3 end"
+    vis = ParseTreeVisualizer(code, lang="en")
+    data = json.loads(vis.to_json())
+    # P -> ['begin', S, 'end']
+    top_seq = data["children"][1]
+    assert top_seq["category"] == "S"
+    assert len(top_seq["children"]) == 3
+    assert top_seq["children"][0]["category"] == "S"
+    assert top_seq["children"][1]["name"] == ";"
+    assert top_seq["children"][2]["category"] == "S"
 
 
 def test_parse_tree_json_and_source_attachment():
     """Перевірка прив'язки source і span до кожного вузла."""
     code = "begin skip end"
-    vis = ParseTreeVisualizer(code)
+    vis = ParseTreeVisualizer(code, lang="uk")
     data = json.loads(vis.to_json())
 
     assert data["kind"] == "NonTerminal"
-    assert "source" in data
+    assert data["name"] == "<програма>"
     assert data["source"] == "begin skip end"
     assert "span" in data
 
@@ -50,11 +89,15 @@ def test_parse_tree_json_and_source_attachment():
 
 
 def test_parse_tree_dot_nodes_match_json():
-    """Кількість оголошень nX [ у DOT відповідає загальній кількості вузлів у JSON."""
+    """Кількість оголошень nX [ у DOT відповідає загальній кількості вузлів у JSON та не має переносів у мітках."""
     code = "begin if X > 0 then Y := 1 else skip end"
-    vis = ParseTreeVisualizer(code)
+    vis = ParseTreeVisualizer(code, lang="uk")
     dot = vis.to_dot()
     json_data = json.loads(vis.to_json())
+
+    assert "Terminal\\n" not in dot
+    for internal_name in ("Aterm", "Afactor", "S_assign", "Bterm", "Bfactor", "RelExpr"):
+        assert internal_name not in dot
 
     def count_nodes(n):
         return 1 + sum(count_nodes(c) for c in n.get("children", []))
@@ -66,10 +109,11 @@ def test_parse_tree_dot_nodes_match_json():
     ]
     assert len(dot_node_declarations) == total_nodes
 
+
 @pytest.mark.skipif(shutil.which("dot") is None, reason="Graphviz 'dot' utility is not installed")
 def test_parse_tree_svg_generation():
     code = "begin R := 1 end"
-    vis = ParseTreeVisualizer(code)
+    vis = ParseTreeVisualizer(code, lang="uk")
     svg = vis.to_svg()
     assert svg.strip().startswith("<?xml") or "<svg" in svg
 
