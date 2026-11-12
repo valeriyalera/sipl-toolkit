@@ -43,7 +43,7 @@ sipl-toolkit/
 ├── docs/
 │   ├── cli.md                 # Документація команд CLI
 │   ├── lexics.md              # Опис лексики та синтаксису SIPL
-│   └──power_tree.svg
+│   └── power_tree.svg
 ├── examples/
 │   ├── factorial.sipl         # Обчислення факторіала N!
 │   ├── gcd.sipl               # Алгоритм Евкліда (вкладені while та if-else)
