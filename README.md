@@ -21,6 +21,19 @@
 | **Разом** | | **10.0** | **Готово до здачі** |
 
 ---
+## Встановлення
+    git clone https://github.com/valeriyalera/sipl-toolkit.git
+    cd sipl-toolkit
+    python -m venv .venv && source .venv/bin/activate
+    pip install -e ".[dev]"
+    pytest
+
+## Використання
+    sipl check examples/power.sipl
+    sipl run examples/power.sipl --state "X=2,Y=5"
+    sipl trace examples/power.sipl --state "X=2,Y=2" --json
+    sipl visualize examples/power.sipl --format svg -o tree.svg
+    sipl term examples/power.sipl
 
 ## Структура проєкту
 
@@ -57,17 +70,3 @@ sipl-toolkit/
 │   └── test_semantics.py      # Тести побудови семантичних термів та децукрування
 ├── pyproject.toml             # Конфігурація пакета, ruff та mypy
 └── pytest.ini                 # Налаштування pytest
-
-## Встановлення
-    git clone https://github.com/valeriyalera/sipl-toolkit.git
-    cd sipl-toolkit
-    python -m venv .venv && source .venv/bin/activate
-    pip install -e ".[dev]"
-    pytest
-
-## Використання
-    sipl check examples/power.sipl
-    sipl run examples/power.sipl --state "X=2,Y=5"
-    sipl trace examples/power.sipl --state "X=2,Y=2" --json
-    sipl visualize examples/power.sipl --format svg -o tree.svg
-    sipl term examples/power.sipl
