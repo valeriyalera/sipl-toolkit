@@ -42,7 +42,8 @@ sipl-toolkit/
 ├── .github/workflows/ci.yml   # REL-01: GitHub Actions CI (lint, mypy, pytest, build)
 ├── docs/
 │   ├── cli.md                 # Документація команд CLI
-│   └── lexics.md              # Опис лексики та синтаксису SIPL
+│   ├── lexics.md              # Опис лексики та синтаксису SIPL
+│   └──power_tree.svg
 ├── examples/
 │   ├── factorial.sipl         # Обчислення факторіала N!
 │   ├── gcd.sipl               # Алгоритм Евкліда (вкладені while та if-else)
