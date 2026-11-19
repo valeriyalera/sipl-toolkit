@@ -70,3 +70,4 @@ sipl-toolkit/
 │   └── test_semantics.py      # Тести побудови семантичних термів та децукрування
 ├── pyproject.toml             # Конфігурація пакета, ruff та mypy
 └── pytest.ini                 # Налаштування pytest
+
